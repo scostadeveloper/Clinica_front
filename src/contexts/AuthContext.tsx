@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/router';
 import { api } from '@/services/api';
+import { logger } from '@/utils/logger';
 
 interface User {
   id: string;
@@ -24,7 +25,7 @@ interface AuthProviderProps {
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  console.log('AuthProvider montado');
+  logger.dev('AuthProvider montado');
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
@@ -39,7 +40,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   async function signIn(email: string, senha: string, unidade: string) {
-    console.log('Chamando signIn:', { email, senha, unidade });
+    logger.auth('Iniciando processo de login', { email: email.replace(/@.*/, '@***'), unidade });
     try {
       const response = await api.post('/auth/login', { email, senha, unidade });
       const { token, user } = response.data;
@@ -50,16 +51,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
       api.defaults.headers.authorization = `Bearer ${token}`;
       setUser(user);
 
+      logger.success('Login realizado com sucesso');
+      logger.api('POST', '/auth/login', true);
       router.push('/dashboard');
     } catch (error) {
+      logger.error('Erro ao realizar login', error);
+      logger.api('POST', '/auth/login', false);
       throw new Error('Erro ao realizar login');
     }
   }
 
   function signOut() {
+    logger.auth('Realizando logout');
     localStorage.removeItem('@EstheticPro:token');
     localStorage.removeItem('@EstheticPro:user');
     setUser(null);
+    logger.success('Logout realizado com sucesso');
     router.push('/login');
   }
 

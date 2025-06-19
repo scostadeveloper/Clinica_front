@@ -1,103 +1,96 @@
-# Frontend - ESTHETIC-PRO
+# Esthetic Pro Frontend
 
-Este é o frontend do sistema ESTHETIC-PRO, uma solução web para gestão de clínicas de estética, desenvolvido com Next.js, React, TypeScript e Tailwind CSS. O projeto prioriza padronização visual, responsividade, acessibilidade e facilidade de integração com diferentes backends.
+Sistema de gestão para clínicas de estética. Interface web responsiva desenvolvida em Next.js.
 
-## Requisitos
+## Setup
 
-- Node.js 18+
-- npm ou yarn
+Instalar dependências:
+```bash
+npm install
+```
 
-## Instalação
+Configurar ambiente:
+```bash
+cp .env.example .env.local
+```
 
-1. Clone o repositório
-2. Instale as dependências:
-   ```bash
-   npm install
-   ```
-3. (Opcional) Configure variáveis de ambiente, se necessário:
-   ```bash
-   cp .env.example .env.local
-   ```
-   Edite o arquivo `.env.local` conforme sua necessidade.
-
-## Desenvolvimento
-
-Para rodar o projeto em modo de desenvolvimento:
+Rodar em desenvolvimento:
 ```bash
 npm run dev
 ```
 
-## Build de Produção
+## Stack
 
-Para gerar a build de produção:
-```bash
-npm run build
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+
+## Configuração
+
+O sistema conecta com a API backend na porta 3001. Edite o `.env.local`:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
+NEXT_PUBLIC_ENABLE_LOGS=false
 ```
 
-Para rodar em produção:
-```bash
-npm start
-```
+## Módulos
 
-## Estrutura do Projeto
+**Autenticação**
+Login por email/senha com seleção de unidade (Barra ou Tijuca).
+
+**Dashboard** 
+Visão geral com métricas e acesso rápido aos módulos.
+
+**Pacientes**
+Cadastro, histórico médico, documentos e busca.
+
+**Agendamentos**
+Calendário com gestão de horários e confirmações.
+
+**Consultas**
+Prontuário eletrônico, anamnese e prescrições.
+
+**Estoque**
+Produtos, movimentações e alertas de estoque baixo.
+
+**Financeiro**
+Transações, relatórios e controle de pagamentos.
+
+## Estrutura
 
 ```
 src/
-  ├── components/     # Componentes reutilizáveis (modais, sidebar, tabelas, etc.)
-  ├── pages/          # Páginas principais dos módulos
-  ├── hooks/          # Hooks personalizados
-  ├── services/       # Serviços de API (mock ou real)
-  ├── contexts/       # Contextos globais do React
-  ├── styles/         # Estilos globais e variáveis CSS
-  ├── utils/          # Funções utilitárias
-  └── types/          # Definições de tipos e interfaces
+├── components/   # Componentes UI
+├── contexts/     # Estados globais  
+├── pages/        # Rotas Next.js
+├── services/     # Chamadas API
+├── styles/       # CSS global
+├── types/        # Types TypeScript
+└── utils/        # Helpers
 ```
 
-## Funcionalidades Atuais
+## Design
 
-- Autenticação de usuários com seleção de unidade
-- Dashboard com cards e gráficos
-- Gestão de pacientes (CRUD, histórico, abas)
-- Agendamento de consultas (calendário, filtro, integração com consultas)
-- Consultas e prontuário (anamnese dinâmica, evolução, anexos)
-- Gestão de estoque (produtos, movimentações, alertas)
-- Módulo financeiro (transações, resumo, gráfico, tabela)
-- Relatórios e exportação (em desenvolvimento)
-- Padrão visual com Tailwind CSS e variáveis CSS centralizadas
-- Mock de dados para testes e prototipação
+Cores: verde escuro (#0d4f3c), dourado (#d4af37), bege claro (#f5f5dc)
 
-## Tecnologias Utilizadas
+Interface limpa com componentes padronizados e responsivos.
 
-- Next.js
-- React
-- TypeScript
-- Tailwind CSS
-- React Icons
-- React Hook Form
-- Yup
-- Axios
+## Comandos
 
-## Integração Backend
+```bash
+npm run dev      # Desenvolvimento
+npm run build    # Build produção  
+npm run start    # Servidor produção
+npm run lint     # Linter
+```
 
-O frontend está preparado para integração com APIs RESTful, podendo consumir:
-- Next.js API Routes (Node.js/TypeScript)
-- Java Spring Boot
+## Deploy
 
-Atualmente, utiliza mocks para simulação de dados. A troca para API real é facilitada pela estrutura de serviços.
+Build e start para produção. Configurar variáveis de ambiente conforme necessário.
 
-## Padrão Visual
+## Desenvolvimento
 
-- Paleta de cores: verde escuro, dourado, bege claro
-- Layout responsivo e acessível
-- Componentes padronizados (modais, tabelas, cards, etc.)
-- Uso extensivo de variáveis CSS para cores e temas
-
-## Contribuição
-
-1. Crie uma branch a partir da `main`
-2. Faça suas alterações
-3. Abra um Pull Request
-
-## Licença
-
-Este projeto é privado e de uso exclusivo da equipe ESTHETIC-PRO. 
+Seguir estrutura de pastas existente. Usar TypeScript strict e componentes funcionais. 

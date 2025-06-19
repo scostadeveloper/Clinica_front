@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FaUser, FaLock, FaSpinner, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { FaBuilding } from 'react-icons/fa';
 import { useAuth } from '@/contexts/AuthContext';
+import { logger } from '@/utils/logger';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -15,7 +16,7 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Formulário enviado:', { email, password, unidadeSelecionada });
+    logger.info('Formulário de login submetido');
     setLoading(true);
     setErro('');
 
