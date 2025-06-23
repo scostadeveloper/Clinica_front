@@ -2,7 +2,7 @@ import axios from 'axios';
 import { logger } from '@/utils/logger';
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
 });
 
 api.interceptors.request.use((config) => {
