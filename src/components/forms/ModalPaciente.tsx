@@ -1,15 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaUser, FaPhone, FaEnvelope, FaCamera, FaMapMarkerAlt } from 'react-icons/fa';
+import { validateCPF, formatCPF, cleanCPF } from '@/utils/cpfValidator';
 
 interface ModalPacienteProps {
   open: boolean;
   onClose: () => void;
   onSave: (data: any) => void;
   initialData?: any;
+  isEditing?: boolean;
 }
 
-export default function ModalPaciente({ open, onClose, onSave, initialData }: ModalPacienteProps) {
-  const [form, setForm] = useState(initialData || {
+export default function ModalPaciente({ open, onClose, onSave, initialData, isEditing = false }: ModalPacienteProps) {
+  const [form, setForm] = useState({
     nome: '', nascimento: '', email: '', telefone: '', genero: '', cpf: '', prontuario: '', estrangeiro: false, corIdentificacao: '',
     sexo: '', nomeSocial: '', altura: '', peso: '', imc: '', prioridade: '',
     cep: '', endereco: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '', pais: '', profissao: '', naturalidade: '', nacionalidade: '', origem: '', religiao: '', corPele: '', escolaridade: '', estadoCivil: '', rg: '', indicacao: '', cns: '', tabela: '', telefone2: '', celular: '', observacoes: '',
@@ -17,13 +19,99 @@ export default function ModalPaciente({ open, onClose, onSave, initialData }: Mo
     // convênios, agendamentos, parentes, etc
   });
 
+  const [cpfError, setCpfError] = useState('');
+
+  // Atualizar form quando initialData mudar
+  useEffect(() => {
+    if (initialData) {
+      setForm({
+        nome: initialData.nome || '',
+        nascimento: initialData.nascimento ? initialData.nascimento.split('T')[0] : '',
+        email: initialData.email || '',
+        telefone: initialData.telefone || '',
+        genero: initialData.genero || '',
+        cpf: initialData.cpf ? formatCPF(initialData.cpf) : '',
+        prontuario: initialData.prontuario || '',
+        estrangeiro: initialData.estrangeiro || false,
+        corIdentificacao: initialData.corIdentificacao || '',
+        sexo: initialData.sexo || '',
+        nomeSocial: initialData.nomeSocial || '',
+        altura: initialData.altura || '',
+        peso: initialData.peso || '',
+        imc: initialData.imc || '',
+        prioridade: initialData.prioridade || '',
+        cep: initialData.cep || '',
+        endereco: initialData.endereco || '',
+        numero: initialData.numero || '',
+        complemento: initialData.complemento || '',
+        bairro: initialData.bairro || '',
+        cidade: initialData.cidade || '',
+        estado: initialData.estado || '',
+        pais: initialData.pais || '',
+        profissao: initialData.profissao || '',
+        naturalidade: initialData.naturalidade || '',
+        nacionalidade: initialData.nacionalidade || '',
+        origem: initialData.origem || '',
+        religiao: initialData.religiao || '',
+        corPele: initialData.corPele || '',
+        escolaridade: initialData.escolaridade || '',
+        estadoCivil: initialData.estadoCivil || '',
+        rg: initialData.rg || '',
+        indicacao: initialData.indicacao || '',
+        cns: initialData.cns || '',
+        tabela: initialData.tabela || '',
+        telefone2: initialData.telefone2 || '',
+        celular: initialData.celular || '',
+        observacoes: initialData.observacoes || '',
+        foto: initialData.foto || ''
+      });
+    } else {
+      // Reset form para criação de novo paciente
+      setForm({
+        nome: '', nascimento: '', email: '', telefone: '', genero: '', cpf: '', prontuario: '', estrangeiro: false, corIdentificacao: '',
+        sexo: '', nomeSocial: '', altura: '', peso: '', imc: '', prioridade: '',
+        cep: '', endereco: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '', pais: '', profissao: '', naturalidade: '', nacionalidade: '', origem: '', religiao: '', corPele: '', escolaridade: '', estadoCivil: '', rg: '', indicacao: '', cns: '', tabela: '', telefone2: '', celular: '', observacoes: '',
+        foto: ''
+      });
+    }
+  }, [initialData, open]);
+
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const { name, value, type } = e.target as HTMLInputElement;
-    setForm({ ...form, [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value });
+    
+    if (name === 'cpf') {
+      // Aplicar máscara e validação de CPF
+      const cleanValue = cleanCPF(value);
+      if (cleanValue.length <= 11) {
+        const formattedCPF = formatCPF(cleanValue);
+        setForm({ ...form, [name]: formattedCPF });
+        
+        // Validar CPF se estiver completo
+        if (cleanValue.length === 11) {
+          if (validateCPF(cleanValue)) {
+            setCpfError('');
+          } else {
+            setCpfError('CPF inválido');
+          }
+        } else {
+          setCpfError('');
+        }
+      }
+    } else {
+      setForm({ ...form, [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value });
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    
+    // Validar CPF antes de enviar
+    if (form.cpf && !validateCPF(form.cpf)) {
+      setCpfError('CPF inválido');
+      alert('Por favor, corrija o CPF antes de continuar.');
+      return;
+    }
+    
     onSave(form);
     onClose();
   }
@@ -34,7 +122,9 @@ export default function ModalPaciente({ open, onClose, onSave, initialData }: Mo
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 overflow-y-auto">
       <div className="bg-[#1e332c] w-full max-w-6xl rounded-xl shadow-2xl p-6 relative border border-[#d6c3a1]/30 overflow-y-auto max-h-[95vh]">
         <button className="absolute top-2 right-2 text-[#d6c3a1] hover:text-red-500 text-xl" onClick={onClose}>×</button>
-        <h2 className="text-2xl font-bold mb-4 text-[#d6c3a1]">Cadastro de Paciente</h2>
+        <h2 className="text-2xl font-bold mb-4 text-[#d6c3a1]">
+          {isEditing ? 'Editar Paciente' : 'Cadastro de Paciente'}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Dados Pessoais */}
           <div className="flex flex-col md:flex-row gap-6 items-start">
@@ -78,7 +168,16 @@ export default function ModalPaciente({ open, onClose, onSave, initialData }: Mo
               </div>
               <div>
                 <label htmlFor="cpf" className="block text-xs font-semibold mb-1 text-[#d6c3a1]">CPF *</label>
-                <input id="cpf" name="cpf" value={form.cpf} onChange={handleChange} className="input w-full" required />
+                <input 
+                  id="cpf" 
+                  name="cpf" 
+                  value={form.cpf} 
+                  onChange={handleChange} 
+                  className={`input w-full ${cpfError ? 'border-red-500' : ''}`}
+                  placeholder="000.000.000-00"
+                  required 
+                />
+                {cpfError && <p className="text-red-500 text-xs mt-1">{cpfError}</p>}
               </div>
               <div>
                 <label htmlFor="sexo" className="block text-xs font-semibold mb-1 text-[#d6c3a1]">Sexo</label>
@@ -197,7 +296,9 @@ export default function ModalPaciente({ open, onClose, onSave, initialData }: Mo
 
           <div className="flex justify-end gap-2 mt-4">
             <button type="button" onClick={onClose} className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition">Cancelar</button>
-            <button type="submit" className="bg-[#d6c3a1] text-[#22382f] px-4 py-2 rounded-lg font-semibold hover:bg-[#fffbe6] transition">Salvar</button>
+            <button type="submit" className="bg-[#d6c3a1] text-[#22382f] px-4 py-2 rounded-lg font-semibold hover:bg-[#fffbe6] transition">
+              {isEditing ? 'Atualizar' : 'Salvar'}
+            </button>
           </div>
         </form>
         <style jsx>{`
